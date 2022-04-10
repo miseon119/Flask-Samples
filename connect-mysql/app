@@ -1,0 +1,32 @@
+from flaskext.mysql import MySQL
+from flask import Flask, render_template, request, redirect, url_for, abort, \
+    send_from_directory
+
+app = Flask(__name__)
+    
+mysql = MySQL()
+ 
+# configuring MySQL for the web application
+app.config['MYSQL_DATABASE_USER'] = 'mspark'    # default user of MySQL to be replaced with appropriate username
+app.config['MYSQL_DATABASE_PASSWORD'] = 'human123' # default passwrod of MySQL to be replaced with appropriate password
+app.config['MYSQL_DATABASE_DB'] = 'TESTDB'  # Database name to be replaced with appropriate database name
+app.config['MYSQL_DATABASE_HOST'] = 'localhost' # default database host of MySQL to be replaced with appropriate database host
+#initialise mySQL
+mysql.init_app(app)
+#create connection to access data
+conn = mysql.connect()
+
+@app.route('/') 
+def index(): 
+    #create a cursor
+    cursor = conn.cursor() 
+    #execute select statement to fetch data to be displayed in combo/dropdown
+    cursor.execute('SELECT JobID,JobName FROM jobs') 
+    #fetch all rows ans store as a set of tuples 
+    joblist = cursor.fetchall() 
+    #render template and send the set of tuples to the HTML file for displaying
+    return render_template("input.html",joblist=joblist )
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    # app.run()
